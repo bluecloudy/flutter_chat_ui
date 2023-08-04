@@ -257,7 +257,9 @@ class TypingWidget extends StatelessWidget {
     if (mode == TypingIndicatorMode.name) {
       return SizedBox(
         child: typingIndicatorTextBuilder != null
-            ? typingIndicatorTextBuilder(widget.options.typingUsers)
+            ? typingIndicatorTextBuilder!(widget.options.typingUsers, InheritedChatTheme.of(context)
+                    .theme
+                    .typingIndicatorTheme)
             : Text(
                 _multiUserTextBuilder(widget.options.typingUsers),
                 style: InheritedChatTheme.of(context)
