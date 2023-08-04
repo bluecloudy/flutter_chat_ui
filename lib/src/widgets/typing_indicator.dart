@@ -199,6 +199,8 @@ class _TypingIndicatorState extends State<TypingIndicator>
                       widget: widget,
                       context: context,
                       mode: widget.options.typingMode,
+                      typingIndicatorTextBuilder:
+                          widget.options.typingIndicatorTextBuilder,
                     ),
                   )
                 : const SizedBox(),
@@ -214,11 +216,13 @@ class TypingWidget extends StatelessWidget {
     required this.widget,
     required this.context,
     required this.mode,
+    this.typingIndicatorTextBuilder,
   });
 
   final TypingIndicator widget;
   final BuildContext context;
   final TypingIndicatorMode mode;
+  final Widget Function(List<types.User> users, TypingIndicatorTheme theme)? typingIndicatorTextBuilder;
 
   /// Handler for multi user typing text.
   String _multiUserTextBuilder(List<types.User> author) {
@@ -252,13 +256,15 @@ class TypingWidget extends StatelessWidget {
     );
     if (mode == TypingIndicatorMode.name) {
       return SizedBox(
-        child: Text(
-          _multiUserTextBuilder(widget.options.typingUsers),
-          style: InheritedChatTheme.of(context)
-              .theme
-              .typingIndicatorTheme
-              .multipleUserTextStyle,
-        ),
+        child: typingIndicatorTextBuilder != null
+            ? typingIndicatorTextBuilder(widget.options.typingUsers)
+            : Text(
+                _multiUserTextBuilder(widget.options.typingUsers),
+                style: InheritedChatTheme.of(context)
+                    .theme
+                    .typingIndicatorTheme
+                    .multipleUserTextStyle,
+              ),
       );
     } else if (mode == TypingIndicatorMode.avatar) {
       return SizedBox(
@@ -433,6 +439,7 @@ class TypingIndicatorOptions {
     this.customTypingIndicator,
     this.typingMode = TypingIndicatorMode.name,
     this.typingUsers = const [],
+    this.typingIndicatorTextBuilder,
   });
 
   /// Animation speed for circles.
@@ -448,6 +455,9 @@ class TypingIndicatorOptions {
   /// Author(s) for [TypingIndicator].
   /// By default its empty list which hides the indicator, see [types.User].
   final List<types.User> typingUsers;
+
+  // Custom text builder for [TypingIndicator].
+  final Widget Function(List<types.User> users, TypingIndicatorTheme theme)? typingIndicatorTextBuilder;
 }
 
 @immutable
